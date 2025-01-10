@@ -1,5 +1,8 @@
+import { IonIcon } from "@ionic/react";
 import { Button, Input, Modal } from "antd";
 import Form, { Rule } from "antd/es/form";
+import { checkmarkDoneOutline } from "ionicons/icons";
+import { useState } from "react";
 
 type FromValues = {
   firstName: string;
@@ -9,12 +12,18 @@ type FromValues = {
 interface propValues {
   isAddNew: boolean;
   setIsAddNew: (p: boolean) => void;
+  handleSubmit: (info: any) => void;
 }
 
 const FormPopup: React.FC<propValues> = ({
   isAddNew,
   setIsAddNew,
+  handleSubmit,
 }: propValues) => {
+  const [info, setInfo] = useState<FromValues>({
+    firstName: "",
+    lastName: "",
+  });
   const validateName: Rule[] = [
     {
       required: true,
@@ -26,29 +35,40 @@ const FormPopup: React.FC<propValues> = ({
     setIsAddNew(false);
   };
 
+  const handleInfoChange = (e: any) => {
+    setInfo((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
   return (
     <Modal
       title="Add New Form Modal"
-      visible={isAddNew}
+      open={isAddNew}
       onCancel={handleCancel}
       footer={null} // Custom footer, remove default buttons
     >
       <Form
         name="basic"
         initialValues={{ remember: true }}
-        onFinish={() => console.log("Hello")}
-        labelCol={{ span: 8 }}
+        onFinish={() => handleSubmit(info)}
+        labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
-        layout="horizontal"
+        layout="vertical"
+        style={{ alignItems: "center" }}
       >
         <Form.Item label="FirstName" name="firstname" rules={validateName}>
-          <Input />
+          <Input name="firstName" onChange={handleInfoChange} />
         </Form.Item>
         <Form.Item label="LastName" name="lastname" rules={validateName}>
-          <Input />
+          <Input name="lastName" onChange={handleInfoChange} />
         </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Create New
+          <IonIcon icon={checkmarkDoneOutline} />
+        </Button>
       </Form>
-      <Button onClick={handleCancel}>Close</Button>
     </Modal>
   );
 };

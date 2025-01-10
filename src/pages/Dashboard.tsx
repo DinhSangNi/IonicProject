@@ -16,6 +16,7 @@ import {
 } from "ionicons/icons";
 import { Table } from "antd";
 import "./Dashboard.css";
+import FormPopup from "../components/FormPopup";
 
 // interface DataType {
 //   id: string;
@@ -127,9 +128,29 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  //   const handleShowStudentDetails = (id: any){
-
-  //   }
+  const handleSubmit = async (info: any) => {
+    try {
+      const rs = await fetch(
+        `https://6780920885151f714b0717a5.mockapi.io/api/v1/students`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(info),
+        }
+      );
+      if (rs.status === 201) {
+        console.log("created");
+        fetchData();
+        setIsAddNew(false);
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -140,7 +161,11 @@ const Dashboard: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>CRUD Dashboard</IonTitle>
-          <IonButton slot="end" type="button">
+          <IonButton
+            slot="end"
+            type="button"
+            onClick={() => setIsAddNew(!isAddNew)}
+          >
             Add New
             <IonIcon icon={addCircleSharp} slot="start" />
           </IonButton>
@@ -162,6 +187,11 @@ const Dashboard: React.FC = () => {
           onChange={handleTableChange}
         />
       </IonContent>
+      <FormPopup
+        isAddNew={isAddNew}
+        setIsAddNew={setIsAddNew}
+        handleSubmit={handleSubmit}
+      />
     </IonPage>
   );
 };
