@@ -17,6 +17,7 @@ import {
 import { Table } from "antd";
 import "./Dashboard.css";
 import FormPopup from "../components/FormPopup";
+import ModalDetails from "../components/ModalDetails";
 
 // interface DataType {
 //   id: string;
@@ -34,6 +35,9 @@ const Dashboard: React.FC = () => {
     total: 0,
   });
   const [isAddNew, setIsAddNew] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [data, setData] = useState<{}>({});
 
   const columns = [
     {
@@ -47,6 +51,7 @@ const Dashboard: React.FC = () => {
       dataIndex: "firstName",
       key: "firstName",
       align: "center",
+      //   sortOrder: "ascend",
     },
     {
       title: "Last Name",
@@ -70,10 +75,24 @@ const Dashboard: React.FC = () => {
       align: "center",
       render: (_: any, record: any) => (
         <>
-          <IonButton color="secondary" size="small">
+          <IonButton
+            color="secondary"
+            size="small"
+            onClick={() => {
+              setData(record);
+              setIsShow(true);
+            }}
+          >
             <IonIcon icon={eyeSharp} slot="icon-only" />
           </IonButton>
-          <IonButton color="warning" size="small">
+          <IonButton
+            color="warning"
+            size="small"
+            onClick={() => {
+              setData(record);
+              setIsEdit(true);
+            }}
+          >
             <IonIcon icon={pencilSharp} slot="icon-only" />
           </IonButton>
           <IonButton
@@ -152,6 +171,30 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleEdit = async (info: any, id: any) => {
+    try {
+      const rs = await fetch(
+        `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(info),
+        }
+      );
+      if (rs.status === 200) {
+        console.log("Edited");
+        fetchData();
+        setIsAddNew(false);
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -187,11 +230,21 @@ const Dashboard: React.FC = () => {
           onChange={handleTableChange}
         />
       </IonContent>
-      <FormPopup
-        isAddNew={isAddNew}
-        setIsAddNew={setIsAddNew}
+      {/* <FormPopup
+        type="add"
+        isOpen={isAddNew}
+        setIsOpen={setIsAddNew}
         handleSubmit={handleSubmit}
+      /> */}
+
+      <FormPopup
+        data={data}
+        type="edit"
+        isOpen={isEdit}
+        setIsOpen={setIsEdit}
+        handleSubmit={handleEdit}
       />
+      <ModalDetails data={data} isOpen={isShow} setIsOpen={setIsShow} />
     </IonPage>
   );
 };

@@ -1,28 +1,32 @@
 import { IonIcon } from "@ionic/react";
 import { Button, Input, Modal } from "antd";
 import Form, { Rule } from "antd/es/form";
-import { checkmarkDoneOutline } from "ionicons/icons";
+import { checkmarkDoneOutline, recording } from "ionicons/icons";
 import { useState } from "react";
 
 type FromValues = {
-  firstName: string;
-  lastName: string;
+  firstName: string | undefined;
+  lastName: string | undefined;
 };
 
 interface propValues {
-  isAddNew: boolean;
-  setIsAddNew: (p: boolean) => void;
-  handleSubmit: (info: any) => void;
+  data?: { id?: string; firstName?: string; lastName?: string };
+  type: "add" | "edit";
+  isOpen: boolean;
+  setIsOpen: (p: boolean) => void;
+  handleSubmit: (info: any, id: any) => void;
 }
 
 const FormPopup: React.FC<propValues> = ({
-  isAddNew,
-  setIsAddNew,
+  data,
+  type,
+  isOpen,
+  setIsOpen,
   handleSubmit,
 }: propValues) => {
   const [info, setInfo] = useState<FromValues>({
-    firstName: "",
-    lastName: "",
+    firstName: data?.firstName,
+    lastName: data?.lastName,
   });
   const validateName: Rule[] = [
     {
@@ -32,7 +36,7 @@ const FormPopup: React.FC<propValues> = ({
   ];
 
   const handleCancel = () => {
-    setIsAddNew(false);
+    setIsOpen(false);
   };
 
   const handleInfoChange = (e: any) => {
@@ -44,25 +48,33 @@ const FormPopup: React.FC<propValues> = ({
 
   return (
     <Modal
-      title="Add New Form Modal"
-      open={isAddNew}
+      title={type === "add" ? "Add New Form Modal" : "Edit Form Modal"}
+      open={isOpen}
       onCancel={handleCancel}
       footer={null} // Custom footer, remove default buttons
     >
       <Form
         name="basic"
         initialValues={{ remember: true }}
-        onFinish={() => handleSubmit(info)}
+        onFinish={() => handleSubmit(info, data.id)}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
         layout="vertical"
         style={{ alignItems: "center" }}
       >
         <Form.Item label="FirstName" name="firstname" rules={validateName}>
-          <Input name="firstName" onChange={handleInfoChange} />
+          <Input
+            name="firstName"
+            value={info.firstName}
+            onChange={handleInfoChange}
+          />
         </Form.Item>
         <Form.Item label="LastName" name="lastname" rules={validateName}>
-          <Input name="lastName" onChange={handleInfoChange} />
+          <Input
+            name="lastName"
+            value={info.lastName}
+            onChange={handleInfoChange}
+          />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Create New
