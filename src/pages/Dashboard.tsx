@@ -1,252 +1,329 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+    IonButton,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+} from '@ionic/react';
 import {
-  addCircleSharp,
-  closeCircleSharp,
-  eyeSharp,
-  pencilSharp,
-} from "ionicons/icons";
-import { Table } from "antd";
-import "./Dashboard.css";
-import FormPopup from "../components/FormPopup";
-import ModalDetails from "../components/ModalDetails";
-
-// interface DataType {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   action: string;
-//   lastUpdate: Date;
-// }
+    addCircleSharp,
+    // chevronBackOutline,
+    // chevronForwardOutline,
+    closeCircleSharp,
+    eyeSharp,
+    pencilSharp,
+} from 'ionicons/icons';
+import { Table } from 'antd';
+import './Dashboard.css';
+import FormPopup from '../components/FormPopup';
+import ModalDetails from '../components/ModalDetails';
+import { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { TypeValues } from '../components/FormPopup';
+import ApiService from '../services/apiService';
+import { useTranslation } from 'react-i18next';
+import { locales } from '../i18n/i18n';
+export type DataType = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avartar: string;
+    lastUpdate: Date;
+};
 
 const Dashboard: React.FC = () => {
-  const [dataSource, setDataSource] = useState<any[]>();
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-  });
-  const [isAddNew, setIsAddNew] = useState<boolean>(false);
-  const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [isShow, setIsShow] = useState<boolean>(false);
-  const [data, setData] = useState<{}>({});
+    const [dataSource, setDataSource] = useState<DataType[]>([]);
+    // const [pagination, setPagination] = useState<TablePaginationConfig>({
+    //     current: 1,
+    //     pageSize: 10,
+    //     total: 0,
+    // });
+    const [page, setPage] = useState<number>(1);
+    const [isAddNew, setIsAddNew] = useState<boolean>(false);
+    const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [isShow, setIsShow] = useState<boolean>(false);
+    const [data, setData] = useState<DataType>();
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [loadingData, setLoadingData] = useState<boolean>(false);
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      align: "center",
-    },
-    {
-      title: "First Name",
-      dataIndex: "firstName",
-      key: "firstName",
-      align: "center",
-      //   sortOrder: "ascend",
-    },
-    {
-      title: "Last Name",
-      dataIndex: "lastName",
-      key: "lastName",
-      align: "center",
-    },
-    {
-      title: "Last Update",
-      dataIndex: "lastUpdate",
-      key: "lastUpdate",
-      align: "center",
-      render: (text: any) => {
-        return text.split("T")[0];
-      },
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      key: "action",
-      align: "center",
-      render: (_: any, record: any) => (
-        <>
-          <IonButton
-            color="secondary"
-            size="small"
-            onClick={() => {
-              setData(record);
-              setIsShow(true);
-            }}
-          >
-            <IonIcon icon={eyeSharp} slot="icon-only" />
-          </IonButton>
-          <IonButton
-            color="warning"
-            size="small"
-            onClick={() => {
-              setData(record);
-              setIsEdit(true);
-            }}
-          >
-            <IonIcon icon={pencilSharp} slot="icon-only" />
-          </IonButton>
-          <IonButton
-            color="danger"
-            size="small"
-            onClick={() => {
-              return handleDeleteStudent(record.id);
-            }}
-          >
-            <IonIcon icon={closeCircleSharp} slot="icon-only" />
-          </IonButton>
-        </>
-      ),
-    },
-  ];
-  const fetchData = async (): Promise<void> => {
-    try {
-      const res = await fetch(
-        "https://6780920885151f714b0717a5.mockapi.io/api/v1/students"
-      );
-      const rs = await res.json();
-      setDataSource(rs);
-      setPagination((prev) => ({ ...prev, total: rs.length }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const { t, i18n } = useTranslation();
 
-  const handleTableChange = (pagination: any): void => {
-    console.log("pagination: ", pagination);
-    setPagination({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: pagination.total,
-    });
-  };
+    const currentLanguage = locales[i18n.language as keyof typeof locales];
 
-  const handleDeleteStudent = async (id: any): Promise<void> => {
-    try {
-      const rs = await fetch(
-        `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
+    const apiService = new ApiService(
+        'https://6780920885151f714b0717a5.mockapi.io/api/v1/students'
+    );
+
+    const columns: ColumnsType<DataType> = [
         {
-          method: "DELETE",
-        }
-      );
-      if (rs.status === 200) {
-        console.log("Successfully Delete.");
-        fetchData();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleCreate = async (info: any): Promise<void> => {
-    try {
-      const rs = await fetch(
-        `https://6780920885151f714b0717a5.mockapi.io/api/v1/students`,
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
+            align: 'center',
+        },
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(info),
-        }
-      );
-      if (rs.status === 201) {
-        console.log("created");
-        fetchData();
-        setIsAddNew(false);
-      } else {
-        console.log("error");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleEdit = async (info: any, id: any): Promise<void> => {
-    try {
-      const rs = await fetch(
-        `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
+            title: t('firstName'),
+            dataIndex: 'firstName',
+            key: 'firstName',
+            align: 'center',
+            //   sortOrder: "ascend",
+        },
         {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(info),
+            title: t('lastName'),
+            dataIndex: 'lastName',
+            key: 'lastName',
+            align: 'center',
+        },
+        {
+            title: t('lastUpdate'),
+            dataIndex: 'lastUpdate',
+            key: 'lastUpdate',
+            align: 'center',
+            defaultSortOrder: 'descend',
+            sorter: (a: DataType, b: DataType) => {
+                return dayjs(a.lastUpdate).unix() - dayjs(b.lastUpdate).unix();
+            },
+            render: (text: string) => {
+                return text.split('T')[0];
+            },
+        },
+        {
+            title: t('action'),
+            dataIndex: 'action',
+            key: 'action',
+            align: 'center',
+            render: (_: unknown, record: DataType) => (
+                <>
+                    <IonButton
+                        color="secondary"
+                        size="small"
+                        onClick={() => {
+                            setData(record);
+                            setIsShow(true);
+                        }}
+                    >
+                        <IonIcon icon={eyeSharp} slot="icon-only" />
+                    </IonButton>
+                    <IonButton
+                        color="warning"
+                        size="small"
+                        onClick={() => {
+                            setData(record);
+                            setIsEdit(true);
+                        }}
+                    >
+                        <IonIcon icon={pencilSharp} slot="icon-only" />
+                    </IonButton>
+                    <IonButton
+                        color="danger"
+                        size="small"
+                        onClick={() => {
+                            return handleDeleteStudent(record.id);
+                        }}
+                    >
+                        <IonIcon icon={closeCircleSharp} slot="icon-only" />
+                    </IonButton>
+                </>
+            ),
+        },
+    ];
+
+    const fetchDataPagination = async (page: number): Promise<void> => {
+        setLoadingData(true);
+        try {
+            const limit: number = 10;
+            const results: DataType[] =
+                await apiService.getStudentsWithPagination<DataType[]>(
+                    'GET',
+                    page,
+                    limit
+                );
+            if (results) {
+                if (results.length < limit) {
+                    setHasMore(false);
+                }
+                // setDataSource(results);
+                setDataSource((prev) => [...prev, ...results]);
+                setLoadingData(false);
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoadingData(false);
         }
-      );
-      if (rs.status === 200) {
-        console.log("Edited");
-        fetchData();
-        setIsEdit(false);
-      } else {
-        console.log("error");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+    // const handleTableChange = (pagination: TablePaginationConfig): void => {
+    //     setPagination({
+    //         current: pagination.current,
+    //         pageSize: pagination.pageSize,
+    //         total: pagination.total,
+    //     });
+    // };
 
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>CRUD Dashboard</IonTitle>
-          <IonButton
-            slot="end"
-            type="button"
-            onClick={() => setIsAddNew(!isAddNew)}
-          >
-            Add New
-            <IonIcon icon={addCircleSharp} slot="start" />
-          </IonButton>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          className="ion-margin-top"
-          pagination={{
-            current: pagination.current,
-            total: pagination.total,
-            pageSize: pagination.pageSize,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "20"],
-          }}
-          onChange={handleTableChange}
-        />
-      </IonContent>
-      <FormPopup
-        type="add"
-        isOpen={isAddNew}
-        setIsOpen={setIsAddNew}
-        callback={handleCreate}
-      />
+    const handleCreate = async (info: Partial<DataType>): Promise<void> => {
+        try {
+            const result = await apiService.addStudent<DataType>('POST', info);
+            if (result) {
+                const cloneDataSource = [...dataSource, result];
+                setDataSource(cloneDataSource);
+                setIsAddNew(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-      <FormPopup
-        data={data}
-        type="edit"
-        isOpen={isEdit}
-        setIsOpen={setIsEdit}
-        callback={handleEdit}
-      />
-      <ModalDetails data={data} isOpen={isShow} setIsOpen={setIsShow} />
-    </IonPage>
-  );
+    const handleDeleteStudent = async (id: string): Promise<void> => {
+        try {
+            const result: DataType = await apiService.deleteStudent(
+                'DELETE',
+                id
+            );
+            if (result) {
+                setDataSource(handleReplaceData(result));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleEdit = async (
+        info: Partial<DataType>,
+        id?: string
+    ): Promise<void> => {
+        try {
+            const result: DataType = await apiService.editStudent(
+                'PUT',
+                info,
+                id
+            );
+            if (result) {
+                dataSource[+result.id] = result;
+                setIsEdit(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // const handleNextPage = (): void => {
+    //     if (hasMore) {
+    //         setPage((prev) => prev + 1);
+    //     }
+    // };
+
+    // const handldPreviousPage = (): void => {
+    //     if (page > 0) {
+    //         setPage((prev) => prev - 1);
+    //     }
+    // };
+
+    const handleLoadingData = (e: CustomEvent): void => {
+        setPage((prev) => prev + 1);
+        fetchDataPagination(page + 1);
+        (e.target as HTMLIonInfiniteScrollElement).complete();
+        console.log('hello');
+    };
+
+    const handleReplaceData = (data: DataType): DataType[] => {
+        return dataSource.filter((item) => item.id != data.id);
+    };
+
+    const changeLanguage = (lng: string): void => {
+        i18n.changeLanguage(lng);
+    };
+
+    useEffect(() => {
+        fetchDataPagination(page);
+    }, []);
+
+    return (
+        <IonPage>
+            <IonHeader>
+                <IonToolbar>
+                    <IonTitle>CRUD {t('dashboard')}</IonTitle>
+                    <IonButton
+                        slot="end"
+                        type="button"
+                        onClick={() => setIsAddNew(!isAddNew)}
+                    >
+                        {t('add_new')}
+                        <IonIcon icon={addCircleSharp} slot="start" />
+                    </IonButton>
+                    <IonButton slot="end" onClick={() => changeLanguage('en')}>
+                        English
+                    </IonButton>
+                    <IonButton disabled fill="clear" slot="end">
+                        {currentLanguage}
+                    </IonButton>
+                    <IonButton slot="end" onClick={() => changeLanguage('vi')}>
+                        VietNamese
+                    </IonButton>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent>
+                <Table
+                    columns={columns}
+                    dataSource={dataSource}
+                    className="ion-margin-top"
+                    // pagination={false}
+                    // footer={() => {
+                    //     return (
+                    //         <>
+                    //             <IonButton
+                    //                 onClick={handldPreviousPage}
+                    //                 disabled={page < 2}
+                    //             >
+                    //                 <IonIcon icon={chevronBackOutline} />
+                    //             </IonButton>
+                    //             <IonButton fill="clear" disabled color="dark">
+                    //                 {page}
+                    //             </IonButton>
+                    //             <IonButton
+                    //                 onClick={handleNextPage}
+                    //                 disabled={!hasMore}
+                    //             >
+                    //                 <IonIcon icon={chevronForwardOutline} />
+                    //             </IonButton>
+                    //         </>
+                    //     );
+                    // }}
+                />
+
+                <IonInfiniteScroll
+                    threshold="150px"
+                    onIonInfinite={handleLoadingData}
+                    disabled={!hasMore || loadingData}
+                >
+                    <IonInfiniteScrollContent
+                        loadingSpinner="bubbles"
+                        loadingText="Loading more data..."
+                    />
+                </IonInfiniteScroll>
+            </IonContent>
+            <FormPopup
+                type={TypeValues.Add}
+                isOpen={isAddNew}
+                setIsOpen={setIsAddNew}
+                callback={handleCreate}
+            />
+
+            <FormPopup
+                currentData={data}
+                type={TypeValues.Edit}
+                isOpen={isEdit}
+                setIsOpen={setIsEdit}
+                callback={handleEdit}
+            />
+            <ModalDetails data={data} isOpen={isShow} setIsOpen={setIsShow} />
+        </IonPage>
+    );
 };
 
 export default Dashboard;

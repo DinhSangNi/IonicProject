@@ -1,0 +1,16 @@
+{
+    "register": "Đăng kí",
+    "login": "Đăng nhập",
+    "dashboard": "Bảng điều khiển",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "lastUpdate": "Ngày cập nhật",
+    "action": "Hoạt động",
+    "add_new": "Thêm mới",
+    "addNewFormModal": "Hộp thoại thêm mới",
+    "editFormModal": "Hộp thoại chỉnh sửa",
+    "enterYourFirstName": "Nhập Tên",
+    "enterYourLastName": "Nhập Họ",
+    "addNew": "Tạo Mới",
+    "saveChanges": "Lưu Thay Đổi"
+}
