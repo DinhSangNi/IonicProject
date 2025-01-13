@@ -14,7 +14,7 @@ interface propValues {
   type: "add" | "edit";
   isOpen: boolean;
   setIsOpen: (p: boolean) => void;
-  handleSubmit: (info: any, id: any) => void;
+  callback: (info: any, id: any) => void;
 }
 
 const FormPopup: React.FC<propValues> = ({
@@ -22,7 +22,7 @@ const FormPopup: React.FC<propValues> = ({
   type,
   isOpen,
   setIsOpen,
-  handleSubmit,
+  callback,
 }: propValues) => {
   const [info, setInfo] = useState<FromValues>({
     firstName: data?.firstName,
@@ -51,12 +51,12 @@ const FormPopup: React.FC<propValues> = ({
       title={type === "add" ? "Add New Form Modal" : "Edit Form Modal"}
       open={isOpen}
       onCancel={handleCancel}
-      footer={null} // Custom footer, remove default buttons
+      footer={null}
     >
       <Form
         name="basic"
         initialValues={{ remember: true }}
-        onFinish={() => handleSubmit(info, data.id)}
+        onFinish={() => callback(info, data?.id)}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
         layout="vertical"

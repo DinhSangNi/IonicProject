@@ -28,7 +28,7 @@ import ModalDetails from "../components/ModalDetails";
 // }
 
 const Dashboard: React.FC = () => {
-  const [dataSource, setDataSource] = useState();
+  const [dataSource, setDataSource] = useState<any[]>();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -108,7 +108,7 @@ const Dashboard: React.FC = () => {
       ),
     },
   ];
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const res = await fetch(
         "https://6780920885151f714b0717a5.mockapi.io/api/v1/students"
@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleTableChange = (pagination: any) => {
+  const handleTableChange = (pagination: any): void => {
     console.log("pagination: ", pagination);
     setPagination({
       current: pagination.current,
@@ -130,7 +130,7 @@ const Dashboard: React.FC = () => {
     });
   };
 
-  const handleDeleteStudent = async (id: any) => {
+  const handleDeleteStudent = async (id: any): Promise<void> => {
     try {
       const rs = await fetch(
         `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (info: any) => {
+  const handleCreate = async (info: any): Promise<void> => {
     try {
       const rs = await fetch(
         `https://6780920885151f714b0717a5.mockapi.io/api/v1/students`,
@@ -171,7 +171,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleEdit = async (info: any, id: any) => {
+  const handleEdit = async (info: any, id: any): Promise<void> => {
     try {
       const rs = await fetch(
         `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
@@ -186,7 +186,7 @@ const Dashboard: React.FC = () => {
       if (rs.status === 200) {
         console.log("Edited");
         fetchData();
-        setIsAddNew(false);
+        setIsEdit(false);
       } else {
         console.log("error");
       }
@@ -230,19 +230,19 @@ const Dashboard: React.FC = () => {
           onChange={handleTableChange}
         />
       </IonContent>
-      {/* <FormPopup
+      <FormPopup
         type="add"
         isOpen={isAddNew}
         setIsOpen={setIsAddNew}
-        handleSubmit={handleSubmit}
-      /> */}
+        callback={handleCreate}
+      />
 
       <FormPopup
         data={data}
         type="edit"
         isOpen={isEdit}
         setIsOpen={setIsEdit}
-        handleSubmit={handleEdit}
+        callback={handleEdit}
       />
       <ModalDetails data={data} isOpen={isShow} setIsOpen={setIsShow} />
     </IonPage>
