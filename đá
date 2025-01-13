@@ -1,0 +1,62 @@
+[33mcommit f0defdd09615264b767031c4225352103ed52a92[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfixEslint[m[33m, [m[1;31morigin/fixEslint[m[33m)[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Mon Jan 13 14:37:48 2025 +0700
+
+    fix eslint
+
+[33mcommit 36aef923541d65bf1c6d809479f660ca3c672780[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Mon Jan 13 14:05:43 2025 +0700
+
+    fix bug handleEdit function, add sorting to table
+
+[33mcommit afb507a463c2e1746bd706e67523c3095b6c7437[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Mon Jan 13 14:01:41 2025 +0700
+
+    fix Eslint
+
+[33mcommit 680dacda493802d3ed1910d1c29804129e1f6238[m
+Merge: eeb61a7 5c6683e
+Author: smeehui <107296884+smeehui@users.noreply.github.com>
+Date:   Mon Jan 13 11:17:15 2025 +0700
+
+    Merge pull request #1 from DinhSangNi/config
+    
+    Add lint, prettier and commit hook
+
+[33mcommit eeb61a76702cd0d300926ffea97b82bb2bf7bf6f[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Mon Jan 13 11:13:00 2025 +0700
+
+    13-1 commit
+
+[33mcommit 5c6683e3036be8cec602b4845f532443bf1a90fd[m[33m ([m[1;31morigin/config[m[33m)[m
+Author: Huy <nguyenvanquanghuy99@gmail.com>
+Date:   Mon Jan 13 11:10:57 2025 +0700
+
+    Add lint, prettier and commit hook
+
+[33mcommit d3e2c96bacb5e5dae823f9d2e930b4b9bec60b68[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Fri Jan 10 16:56:31 2025 +0700
+
+    commit
+
+[33mcommit b9a9b0667b15b53439620305d46aa6c6dd7641d8[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Fri Jan 10 14:53:32 2025 +0700
+
+    decond commit
+
+[33mcommit 94211b8c1a3750e7edfb8b4f678d501b20912413[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Fri Jan 10 14:05:22 2025 +0700
+
+    first commit
+
+[33mcommit 42eb3279a56fcfdf0c5d7c7b1859b936f5bdc322[m
+Author: TruongDinhSang <sangprotqb@gmail.com>
+Date:   Thu Jan 9 10:38:59 2025 +0700
+
+    Initial commit

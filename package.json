@@ -1,5 +1,5 @@
 {
-  "name": "myApp",
+  "name": "my-app",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test.e2e": "cypress run",
     "test.unit": "vitest",
-    "lint": "eslint"
+    "lint": "eslint src/**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts,html,vue}",
+    "pre-hook": "copy pre-commit.sample .git\\hooks\\pre-commit /y"
   },
   "dependencies": {
     "@capacitor/android": "6.2.0",
@@ -23,6 +24,7 @@
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "antd": "^5.23.0",
+    "dayjs": "^1.11.13",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -38,11 +40,14 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.1",
     "cypress": "^13.5.0",
-    "eslint": "^8.35.0",
+    "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
     "jsdom": "^22.1.0",
     "terser": "^5.4.0",
     "typescript": "^5.1.6",
