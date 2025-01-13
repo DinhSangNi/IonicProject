@@ -1,25 +1,25 @@
-import { Redirect, Route } from "react-router-dom";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import { Route } from "react-router-dom"
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react"
+import { IonReactRouter } from "@ionic/react-router"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import Dashboard from "./pages/Dashboard"
 
 /* Core CSS required for Ionic components to work properly */
-import "@ionic/react/css/core.css";
+import "@ionic/react/css/core.css"
 
 /* Basic CSS for apps built with Ionic */
-import "@ionic/react/css/normalize.css";
-import "@ionic/react/css/structure.css";
-import "@ionic/react/css/typography.css";
+import "@ionic/react/css/normalize.css"
+import "@ionic/react/css/structure.css"
+import "@ionic/react/css/typography.css"
 
 /* Optional CSS utils that can be commented out */
-import "@ionic/react/css/padding.css";
-import "@ionic/react/css/float-elements.css";
-import "@ionic/react/css/text-alignment.css";
-import "@ionic/react/css/text-transformation.css";
-import "@ionic/react/css/flex-utils.css";
-import "@ionic/react/css/display.css";
+import "@ionic/react/css/padding.css"
+import "@ionic/react/css/float-elements.css"
+import "@ionic/react/css/text-alignment.css"
+import "@ionic/react/css/text-transformation.css"
+import "@ionic/react/css/flex-utils.css"
+import "@ionic/react/css/display.css"
 
 /**
  * Ionic Dark Mode
@@ -30,44 +30,44 @@ import "@ionic/react/css/display.css";
 
 /* import '@ionic/react/css/palettes/dark.always.css'; */
 /* import '@ionic/react/css/palettes/dark.class.css'; */
-import "@ionic/react/css/palettes/dark.system.css";
+import "@ionic/react/css/palettes/dark.system.css"
 
 /* Theme variables */
-import "./theme/variables.css";
-import { createContext } from "react";
+import "./theme/variables.css"
+import { createContext } from "react"
 
-setupIonicReact();
+setupIonicReact()
 
 type User = {
-  email: string;
-  password: string;
-};
+    email: string
+    password: string
+}
 
 const data: User[] = [
-  { email: "user1@gmail.com", password: "123" },
-  { email: "user2@gmail.com", password: "456" },
-];
+    { email: "user1@gmail.com", password: "123" },
+    { email: "user2@gmail.com", password: "456" },
+]
 
-export const ContextData = createContext(data);
+export const ContextData = createContext(data)
 
 const App: React.FC = () => (
-  <ContextData.Provider value={data}>
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/register">
-            <Register />
-          </Route>
-          <Route exact path="/dashboard">
-            <Dashboard />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </IonApp>
-  </ContextData.Provider>
-);
+    <ContextData.Provider value={data}>
+        <IonApp>
+            <IonReactRouter>
+                <IonRouterOutlet>
+                    <Route exact path="/login">
+                        <Login />
+                    </Route>
+                    <Route exact path="/register">
+                        <Register />
+                    </Route>
+                    <Route exact path="/dashboard">
+                        <Dashboard />
+                    </Route>
+                </IonRouterOutlet>
+            </IonReactRouter>
+        </IonApp>
+    </ContextData.Provider>
+)
 
-export default App;
+export default App
