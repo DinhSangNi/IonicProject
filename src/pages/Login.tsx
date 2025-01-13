@@ -12,9 +12,9 @@ import {
 } from "@ionic/react"
 import { logInOutline, personCircleOutline } from "ionicons/icons"
 import FCC from "../assets/freecodecamp.png"
-import { useState } from "react"
+import { useState, useContext } from "react"
 import Intro from "../components/Intro"
-// import { ContextData } from "../App"
+import { ContextData } from "../App"
 
 const Login: React.FC = () => {
     type User = {
@@ -26,8 +26,8 @@ const Login: React.FC = () => {
         email: "",
         password: "",
     })
-    // const userData = useContext(ContextData)
-    // // console.log("data:", userData)
+    const userData = useContext(ContextData)
+    console.log("data:", userData)
 
     console.log(user)
 
