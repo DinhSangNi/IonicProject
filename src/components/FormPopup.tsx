@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { DataType } from '../pages/Dashboard';
 import { useTranslation } from 'react-i18next';
 
+
 type FormValues = {
     firstName: string | undefined;
     lastName: string | undefined;
@@ -22,6 +23,7 @@ type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     callback: (info: Partial<DataType>, id?: string) => Promise<void>;
+
 };
 
 const FormPopup: React.FC<Props> = ({
@@ -35,7 +37,6 @@ const FormPopup: React.FC<Props> = ({
         firstName: currentData?.firstName,
         lastName: currentData?.lastName,
     });
-
     const { t } = useTranslation();
 
     const firstNameValidationRules: Rule[] = [
@@ -103,12 +104,14 @@ const FormPopup: React.FC<Props> = ({
                     <Input
                         name="lastName"
                         placeholder={t('enterYourLastName')}
+
                         value={info.lastName}
                         onChange={handleInfoChange}
                     />
                 </Form.Item>
                 <Button type="primary" htmlType="submit">
                     {type === TypeValues.Add ? t('addNew') : t('saveChanges')}
+
                     <IonIcon icon={checkmarkDoneOutline} />
                 </Button>
             </Form>

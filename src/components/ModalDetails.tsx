@@ -1,16 +1,17 @@
-import { Modal } from "antd";
+import { Modal } from 'antd';
 
-interface propValues {
+type PropValues = {
     data?: { id?: string; firstName?: string; lastName?: string };
     isOpen: boolean;
     setIsOpen: (p: boolean) => void;
-}
+};
 
-const ModalDetails: React.FC<propValues> = ({
+const ModalDetails: React.FC<PropValues> = ({
     data,
     isOpen,
     setIsOpen,
-}: propValues) => {
+}: PropValues) => {
+
     const handleCancel = () => {
         setIsOpen(false);
     };
@@ -38,6 +39,7 @@ const ModalDetails: React.FC<propValues> = ({
                         <td>{data?.firstName}</td>
                     </tr>
                     <tr style={{ display: "flex", gap: "20px" }}>
+
                         <td>Last Name</td>
                         <td>{data?.lastName}</td>
                     </tr>
