@@ -14,13 +14,15 @@ import {
     eyeSharp,
     pencilSharp,
 } from 'ionicons/icons';
-import { Table, TablePaginationConfig } from 'antd';
+
 import './Dashboard.css';
 import FormPopup from '../components/FormPopup';
 import ModalDetails from '../components/ModalDetails';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { TypeValues } from '../components/FormPopup';
+import { Table } from 'antd';
+import ApiService from '../services/apiService';
 
 export type DataType = {
     id: string;
@@ -31,16 +33,15 @@ export type DataType = {
 };
 
 const Dashboard: React.FC = () => {
-    const [dataSource, setDataSource] = useState<DataType[]>();
-    const [pagination, setPagination] = useState<TablePaginationConfig>({
-        current: 1,
-        pageSize: 10,
-        total: 0,
-    });
+    const [dataSource, setDataSource] = useState<DataType[]>([]);
     const [isAddNew, setIsAddNew] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isShow, setIsShow] = useState<boolean>(false);
     const [data, setData] = useState<DataType>();
+    const [page, setPage] = useState<number>(1);
+    const apiService = new ApiService(
+        'https://6780920885151f714b0717a5.mockapi.io/api/v1/students'
+    );
 
     const columns: ColumnsType<DataType> = [
         {
@@ -57,7 +58,7 @@ const Dashboard: React.FC = () => {
             //   sortOrder: "ascend",
         },
         {
-            title: 'Last Name',
+            title: ' Last Name',
             dataIndex: 'lastName',
             key: 'lastName',
             align: 'center',
@@ -115,60 +116,55 @@ const Dashboard: React.FC = () => {
             ),
         },
     ];
-    const fetchData = async (): Promise<void> => {
+
+    const fetchDataPagination = async (page: number): Promise<void> => {
         try {
-            const res = await fetch(
-                'https://6780920885151f714b0717a5.mockapi.io/api/v1/students'
-            );
-            const rs: DataType[] = await res.json();
-            setDataSource(rs);
-            setPagination((prev) => ({ ...prev, total: rs.length }));
-        } catch (error) {
-            console.log(error);
+            const limit: number = 10;
+            const results: DataType[] =
+                await apiService.getStudentsWithPagination<DataType[]>(
+                    'GET',
+                    page,
+                    limit
+                );
+            if (results) {
+                if (results.length < limit) {
+                }
+                setDataSource(results);
+            }
+        } catch (e) {
+            console.log(e);
         }
     };
 
-    const handleTableChange = (pagination: TablePaginationConfig): void => {
-        setPagination({
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-        });
-    };
+    // const handleTableChange = (pagination: TablePaginationConfig): void => {
+    //     setPagination({
+    //         current: pagination.current,
+    //         pageSize: pagination.pageSize,
+    //         total: pagination.total,
+    //     });
+    // };
 
-    const handleDeleteStudent = async (id: string): Promise<void> => {
+    const handleCreate = async (info: Partial<DataType>): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-            if (rs.status === 200) {
-                fetchData();
+            const result = await apiService.addStudent<DataType>('POST', info);
+            if (result) {
+                const cloneDataSource = [...dataSource, result];
+                setDataSource(cloneDataSource);
+                setIsAddNew(false);
             }
         } catch (error) {
             console.log(error);
         }
     };
 
-    const handleCreate = async (info: Partial<DataType>): Promise<void> => {
+    const handleDeleteStudent = async (id: string): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(info),
-                }
+            const result: DataType = await apiService.deleteStudent(
+                'DELETE',
+                id
             );
-            if (rs.status === 201) {
-                fetchData();
-                setIsAddNew(false);
-            } else {
-                console.log('error');
+            if (result) {
+                setDataSource(handleReplaceData(result));
             }
         } catch (error) {
             console.log(error);
@@ -177,33 +173,31 @@ const Dashboard: React.FC = () => {
 
     const handleEdit = async (
         info: Partial<DataType>,
-        id: string | undefined
+        id?: string
     ): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ...info, lastUpdate: dayjs() }),
-                }
+            const result: DataType = await apiService.editStudent(
+                'PUT',
+                info,
+                id
             );
-            if (rs.status === 200) {
-                fetchData();
+            if (result) {
+                dataSource[+result.id] = result;
                 setIsEdit(false);
-            } else {
-                console.log('error');
             }
         } catch (error) {
             console.log(error);
         }
     };
 
+    const handleReplaceData = (data: DataType): DataType[] => {
+        return dataSource.filter((item) => item.id != data.id);
+    };
+
     useEffect(() => {
-        fetchData();
+        fetchDataPagination(page);
     }, []);
+
 
     return (
         <IonPage>
@@ -225,15 +219,6 @@ const Dashboard: React.FC = () => {
                     columns={columns}
                     dataSource={dataSource}
                     className="ion-margin-top"
-                    pagination={{
-                        current: pagination.current,
-                        total: pagination.total,
-                        pageSize: pagination.pageSize,
-                        showQuickJumper: true,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '20'],
-                    }}
-                    onChange={handleTableChange}
                 />
             </IonContent>
             <FormPopup
