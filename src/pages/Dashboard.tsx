@@ -14,6 +14,7 @@ import {
     eyeSharp,
     pencilSharp,
 } from 'ionicons/icons';
+
 import './Dashboard.css';
 import FormPopup from '../components/FormPopup';
 import ModalDetails from '../components/ModalDetails';
@@ -22,6 +23,7 @@ import dayjs from 'dayjs';
 import { TypeValues } from '../components/FormPopup';
 import { Table } from 'antd';
 import ApiService from '../services/apiService';
+
 export type DataType = {
     id: string;
     firstName: string;
@@ -195,6 +197,7 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         fetchDataPagination(page);
     }, []);
+
 
     return (
         <IonPage>
