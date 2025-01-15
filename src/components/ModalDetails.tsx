@@ -1,22 +1,25 @@
-import { Modal } from "antd";
+import { Modal } from 'antd';
 
-interface propValues {
+
+type PropValues = {
     data?: { id?: string; firstName?: string; lastName?: string };
     isOpen: boolean;
     setIsOpen: (p: boolean) => void;
-}
+};
 
-const ModalDetails: React.FC<propValues> = ({
+const ModalDetails: React.FC<PropValues> = ({
     data,
     isOpen,
     setIsOpen,
-}: propValues) => {
+}: PropValues) => {
     const handleCancel = () => {
         setIsOpen(false);
     };
     return (
         <Modal
-            title={"Detailed Information"}
+
+            title={'Detailed Information'}
+
             open={isOpen}
             onCancel={handleCancel}
             footer={null} // Custom footer, remove default buttons
@@ -29,6 +32,7 @@ const ModalDetails: React.FC<propValues> = ({
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr style={{ display: "flex", gap: "20px" }}>
                         <td>ID</td>
                         <td>{data?.id}</td>
@@ -38,6 +42,7 @@ const ModalDetails: React.FC<propValues> = ({
                         <td>{data?.firstName}</td>
                     </tr>
                     <tr style={{ display: "flex", gap: "20px" }}>
+
                         <td>Last Name</td>
                         <td>{data?.lastName}</td>
                     </tr>

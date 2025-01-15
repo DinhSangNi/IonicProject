@@ -39,6 +39,7 @@ const Dashboard: React.FC = () => {
     //     total: 0,
     // });
     const [page, setPage] = useState<number>(1);
+
     const [isAddNew, setIsAddNew] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isShow, setIsShow] = useState<boolean>(false);
@@ -177,6 +178,7 @@ const Dashboard: React.FC = () => {
             );
             if (result) {
                 setDataSource(handleReplaceData(result));
+
             }
         } catch (error) {
             console.log(error);
@@ -196,12 +198,12 @@ const Dashboard: React.FC = () => {
             if (result) {
                 dataSource[+result.id] = result;
                 setIsEdit(false);
+
             }
         } catch (error) {
             console.log(error);
         }
     };
-
     // const handleNextPage = (): void => {
     //     if (hasMore) {
     //         setPage((prev) => prev + 1);
@@ -229,15 +231,19 @@ const Dashboard: React.FC = () => {
         fetchDataPagination(page);
     }, []);
 
+
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
+                    <IonTitle>CRUD Dashboard</IonTitle>
                     <IonButton
                         slot="end"
                         type="button"
                         onClick={() => setIsAddNew(!isAddNew)}
                     >
+
+                        Add New
                         <IonIcon icon={addCircleSharp} slot="start" />
                     </IonButton>
                 </IonToolbar>
@@ -258,6 +264,7 @@ const Dashboard: React.FC = () => {
                         loadingText="Loading more data..."
                     />
                 </IonInfiniteScroll>
+
             </IonContent>
             <FormPopup
                 type={TypeValues.Add}
