@@ -5,6 +5,8 @@ import {
     IonHeader,
     IonIcon,
     IonPage,
+    IonSelect,
+    IonSelectOption,
     IonTitle,
     IonToolbar,
 } from '@ionic/react';
@@ -21,7 +23,8 @@ import ModalDetails from '../components/ModalDetails';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { TypeValues } from '../components/FormPopup';
-
+import { useTranslation } from 'react-i18next';
+import { locales } from '../i18n/i18n';
 export type DataType = {
     id: string;
     firstName: string;
@@ -41,6 +44,9 @@ const Dashboard: React.FC = () => {
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isShow, setIsShow] = useState<boolean>(false);
     const [data, setData] = useState<DataType>();
+    const { t, i18n } = useTranslation();
+
+    const currentLanguage = locales[i18n.language as keyof typeof locales];
 
     const columns: ColumnsType<DataType> = [
         {
@@ -50,20 +56,20 @@ const Dashboard: React.FC = () => {
             align: 'center',
         },
         {
-            title: 'First Name',
+            title: t('firstName'),
             dataIndex: 'firstName',
             key: 'firstName',
             align: 'center',
             //   sortOrder: "ascend",
         },
         {
-            title: 'Last Name',
+            title: t('lastName'),
             dataIndex: 'lastName',
             key: 'lastName',
             align: 'center',
         },
         {
-            title: 'Last Update',
+            title: t('lastUpdate'),
             dataIndex: 'lastUpdate',
             key: 'lastUpdate',
             align: 'center',
@@ -76,7 +82,7 @@ const Dashboard: React.FC = () => {
             },
         },
         {
-            title: 'Action',
+            title: t('action'),
             dataIndex: 'action',
             key: 'action',
             align: 'center',
@@ -201,6 +207,11 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    const handleChangeLanguage = (lng: string): void => {
+        i18n.changeLanguage(lng);
+        localStorage.setItem('language', lng);
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -209,13 +220,25 @@ const Dashboard: React.FC = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>CRUD Dashboard</IonTitle>
+                    <IonTitle>CRUD {t('dashboard')}</IonTitle>
+                    <IonSelect
+                        className="ion-margin-end"
+                        slot="end"
+                        value={currentLanguage}
+                        placeholder={currentLanguage}
+                        onIonChange={(e) =>
+                            handleChangeLanguage(e.detail.value)
+                        }
+                    >
+                        <IonSelectOption value="vi">VietNamese</IonSelectOption>
+                        <IonSelectOption value="en">English</IonSelectOption>
+                    </IonSelect>
                     <IonButton
                         slot="end"
                         type="button"
                         onClick={() => setIsAddNew(!isAddNew)}
                     >
-                        Add New
+                        {t('addNew')}
                         <IonIcon icon={addCircleSharp} slot="start" />
                     </IonButton>
                 </IonToolbar>
