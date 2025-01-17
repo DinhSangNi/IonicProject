@@ -1,0 +1,15 @@
+{
+    "register": "Register",
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "lastUpdate": "Last Update",
+    "action": "Action",
+    "addNewFormModal": "Add New Form Modal",
+    "editFormModal": "Edit Form Modal",
+    "enterYourFirstName": "Enter your first name",
+    "enterYourLastName": "Enter your last name",
+    "addNew": "Add New",
+    "saveChanges": "Save Changes"
+}
