@@ -3,6 +3,7 @@ import { Button, Input, Modal } from 'antd';
 import Form, { Rule } from 'antd/es/form';
 import { checkmarkDoneOutline } from 'ionicons/icons';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DataType } from '../pages/Dashboard';
 
 type FormValues = {
@@ -37,17 +38,18 @@ const FormPopup: React.FC<Props> = ({
         firstName: currentData?.firstName,
         lastName: currentData?.lastName,
     });
+    const { t } = useTranslation();
     const firstNameValidationRules: Rule[] = [
         {
             required: true,
-            message: 'Please input your first name !',
+            message: t('firstNameRuleMessage'),
         },
     ];
 
     const lastNameValidationRules: Rule[] = [
         {
             required: true,
-            message: 'Please input your last name !',
+            message: t('lastNameRuleMessage'),
         },
     ];
 
@@ -66,8 +68,8 @@ const FormPopup: React.FC<Props> = ({
         <Modal
             title={
                 type === TypeValues.Add
-                    ? 'Add New Form Modal'
-                    : 'Edit Form Modal'
+                    ? t('addNewFormModal')
+                    : t('editFormModal')
             }
             open={isOpen}
             onCancel={handleCancel}
@@ -83,7 +85,7 @@ const FormPopup: React.FC<Props> = ({
                 style={{ alignItems: 'center' }}
             >
                 <Form.Item
-                    label="FirstName"
+                    label={t('firstName')}
                     name="firstName"
                     rules={firstNameValidationRules}
                 >
@@ -94,7 +96,7 @@ const FormPopup: React.FC<Props> = ({
                     />
                 </Form.Item>
                 <Form.Item
-                    label="LastName"
+                    label={t('lastName')}
                     name="lastName"
                     rules={lastNameValidationRules}
                 >
@@ -105,7 +107,7 @@ const FormPopup: React.FC<Props> = ({
                     />
                 </Form.Item>
                 <Button type="primary" htmlType="submit">
-                    {type === TypeValues.Add ? `Create New ` : `Save Changes`}
+                    {type === TypeValues.Add ? t('addNew') : t('saveChanges')}
                     <IonIcon icon={checkmarkDoneOutline} />
                 </Button>
             </Form>

@@ -8,8 +8,10 @@
     "action": "Hoạt động",
     "addNewFormModal": "Hộp thoại thêm mới",
     "editFormModal": "Hộp thoại chỉnh sửa",
-    "enterYourFirstName": "Nhập Tên",
-    "enterYourLastName": "Nhập Họ",
     "addNew": "Tạo Mới",
-    "saveChanges": "Lưu Thay Đổi"
+    "saveChanges": "Lưu Thay Đổi",
+    "detailedInformation": "Thông tin chi tiết",
+    "firstNameRuleMessage": "Nhập tên mày vào !",
+    "lastNameRuleMessage": "Nhập họ mày vào !",
+    "loadingMoreData": "Đang tải thêm dữ liệu"
 }

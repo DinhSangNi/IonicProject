@@ -8,8 +8,10 @@
     "action": "Action",
     "addNewFormModal": "Add New Form Modal",
     "editFormModal": "Edit Form Modal",
-    "enterYourFirstName": "Enter your first name",
-    "enterYourLastName": "Enter your last name",
     "addNew": "Add New",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "detailedInformation": "Detailed Information",
+    "firstNameRuleMessage": "Please input your first name !",
+    "lastNameRuleMessage": "Please input your last name !",
+    "loadingMoreData": "Loading more data"
 }

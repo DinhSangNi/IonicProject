@@ -1,0 +1,4 @@
+.modal-table tbody tr {
+    display: flex;
+    gap: 20px
+}
