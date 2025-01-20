@@ -1,4 +1,6 @@
 import { Modal } from 'antd';
+import './ModalDetail.css';
+import { useTranslation } from 'react-i18next';
 
 type PropValues = {
     data?: { id?: string; firstName?: string; lastName?: string };
@@ -11,17 +13,18 @@ const ModalDetails: React.FC<PropValues> = ({
     isOpen,
     setIsOpen,
 }: PropValues) => {
+    const { t } = useTranslation();
     const handleCancel = () => {
         setIsOpen(false);
     };
     return (
         <Modal
-            title={'Detailed Information'}
+            title={t('detailedInformation')}
             open={isOpen}
             onCancel={handleCancel}
             footer={null} // Custom footer, remove default buttons
         >
-            <table>
+            <table className="modal-table">
                 <thead>
                     <tr>
                         <td></td>
@@ -29,16 +32,16 @@ const ModalDetails: React.FC<PropValues> = ({
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style={{ display: 'flex', gap: '20px' }}>
+                    <tr>
                         <td>ID</td>
                         <td>{data?.id}</td>
                     </tr>
-                    <tr style={{ display: 'flex', gap: '20px' }}>
-                        <td>First Name</td>
+                    <tr>
+                        <td>{t('firstName')}</td>
                         <td>{data?.firstName}</td>
                     </tr>
-                    <tr style={{ display: 'flex', gap: '20px' }}>
-                        <td>Last Name</td>
+                    <tr>
+                        <td>{t('lastName')}</td>
                         <td>{data?.lastName}</td>
                     </tr>
                 </tbody>

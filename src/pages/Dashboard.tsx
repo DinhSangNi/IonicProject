@@ -4,6 +4,8 @@ import {
     IonContent,
     IonHeader,
     IonIcon,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     IonPage,
     IonSelect,
     IonSelectOption,
@@ -16,11 +18,10 @@ import {
     eyeSharp,
     pencilSharp,
 } from 'ionicons/icons';
-import { Table, TablePaginationConfig } from 'antd';
 import './Dashboard.css';
 import FormPopup from '../components/FormPopup';
 import ModalDetails from '../components/ModalDetails';
-import { ColumnsType } from 'antd/es/table';
+import Table, { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { TypeValues } from '../components/FormPopup';
 import { useTranslation } from 'react-i18next';
@@ -34,16 +35,16 @@ export type DataType = {
 };
 
 const Dashboard: React.FC = () => {
-    const [dataSource, setDataSource] = useState<DataType[]>();
-    const [pagination, setPagination] = useState<TablePaginationConfig>({
-        current: 1,
-        pageSize: 10,
-        total: 0,
-    });
+    const [dataSource, setDataSource] = useState<DataType[]>([]);
+    const [page, setPage] = useState<number>(1);
+
     const [isAddNew, setIsAddNew] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isShow, setIsShow] = useState<boolean>(false);
     const [data, setData] = useState<DataType>();
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [loadingData, setLoadingData] = useState<boolean>(false);
+
     const { t, i18n } = useTranslation();
 
     const currentLanguage = locales[i18n.language as keyof typeof locales];
@@ -60,7 +61,6 @@ const Dashboard: React.FC = () => {
             dataIndex: 'firstName',
             key: 'firstName',
             align: 'center',
-            //   sortOrder: "ascend",
         },
         {
             title: t('lastName'),
@@ -121,60 +121,66 @@ const Dashboard: React.FC = () => {
             ),
         },
     ];
-    const fetchData = async (): Promise<void> => {
+
+    const fetchDataPagination = async (page: number): Promise<void> => {
+        setLoadingData(true);
         try {
-            const res = await fetch(
-                'https://6780920885151f714b0717a5.mockapi.io/api/v1/students'
+            const limit: number = 10;
+            const queryString = `page=${page}&limit=${limit}`;
+            const results = await fetch(
+                `${import.meta.env.VITE_BE_BASE_URL}?${queryString}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
             );
-            const rs: DataType[] = await res.json();
-            setDataSource(rs);
-            setPagination((prev) => ({ ...prev, total: rs.length }));
-        } catch (error) {
-            console.log(error);
+            if (results.ok) {
+                const rs = await results.json();
+                if (rs.length < limit) {
+                    setHasMore(false);
+                }
+                setDataSource((prev) => [...prev, ...rs]);
+                setLoadingData(false);
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoadingData(false);
         }
     };
 
-    const handleTableChange = (pagination: TablePaginationConfig): void => {
-        setPagination({
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-        });
-    };
-
-    const handleDeleteStudent = async (id: string): Promise<void> => {
+    const handleCreate = async (info: Partial<DataType>): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-            if (rs.status === 200) {
-                fetchData();
+            const result = await fetch(import.meta.env.VITE_BE_BASE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(info),
+            });
+            if (result.ok) {
+                const cloneDataSource = [...dataSource, await result.json()];
+                setDataSource(cloneDataSource);
+                setIsAddNew(false);
             }
         } catch (error) {
             console.log(error);
         }
     };
 
-    const handleCreate = async (info: Partial<DataType>): Promise<void> => {
+    const handleDeleteStudent = async (id: string): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students`,
+            const result = await fetch(
+                `${import.meta.env.VITE_BE_BASE_URL}/${id}`,
                 {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(info),
+                    method: 'DELETE',
                 }
             );
-            if (rs.status === 201) {
-                fetchData();
-                setIsAddNew(false);
-            } else {
-                console.log('error');
+
+            if (result) {
+                setDataSource(handleReplaceData(await result.json()));
             }
         } catch (error) {
             console.log(error);
@@ -183,11 +189,11 @@ const Dashboard: React.FC = () => {
 
     const handleEdit = async (
         info: Partial<DataType>,
-        id: string | undefined
+        id?: string
     ): Promise<void> => {
         try {
-            const rs = await fetch(
-                `https://6780920885151f714b0717a5.mockapi.io/api/v1/students/${id}`,
+            const result = await fetch(
+                `${import.meta.env.VITE_BE_BASE_URL}/${id}`,
                 {
                     method: 'PUT',
                     headers: {
@@ -196,15 +202,25 @@ const Dashboard: React.FC = () => {
                     body: JSON.stringify({ ...info, lastUpdate: dayjs() }),
                 }
             );
-            if (rs.status === 200) {
-                fetchData();
+            if (result) {
+                const rs = await result.json();
+                const index = dataSource.findIndex((item) => item.id === rs.id);
+                dataSource[index] = await rs;
                 setIsEdit(false);
-            } else {
-                console.log('error');
             }
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handleLoadingData = (e: CustomEvent): void => {
+        setPage((prev) => prev + 1);
+        fetchDataPagination(page + 1);
+        (e.target as HTMLIonInfiniteScrollElement).complete();
+    };
+
+    const handleReplaceData = (data: DataType): DataType[] => {
+        return dataSource.filter((item) => item.id != data.id);
     };
 
     const handleChangeLanguage = (lng: string): void => {
@@ -213,7 +229,7 @@ const Dashboard: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchData();
+        fetchDataPagination(page);
     }, []);
 
     return (
@@ -248,16 +264,17 @@ const Dashboard: React.FC = () => {
                     columns={columns}
                     dataSource={dataSource}
                     className="ion-margin-top"
-                    pagination={{
-                        current: pagination.current,
-                        total: pagination.total,
-                        pageSize: pagination.pageSize,
-                        showQuickJumper: true,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '20'],
-                    }}
-                    onChange={handleTableChange}
                 />
+                <IonInfiniteScroll
+                    threshold="150px"
+                    onIonInfinite={handleLoadingData}
+                    disabled={!hasMore || loadingData}
+                >
+                    <IonInfiniteScrollContent
+                        loadingSpinner="bubbles"
+                        loadingText={t('loadingMoreData')}
+                    />
+                </IonInfiniteScroll>
             </IonContent>
             <FormPopup
                 type={TypeValues.Add}
