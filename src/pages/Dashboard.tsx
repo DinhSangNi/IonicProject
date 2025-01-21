@@ -11,6 +11,7 @@ import {
     IonSelectOption,
     IonTitle,
     IonToolbar,
+    IonToast,
 } from '@ionic/react';
 import {
     addCircleSharp,
@@ -36,6 +37,11 @@ export type DataType = {
     lastUpdate: Date;
 };
 
+enum ColorToast {
+    success = 'success',
+    danger = 'danger',
+}
+
 const Dashboard: React.FC = () => {
     const [dataSource, setDataSource] = useState<DataType[]>([]);
     const [isAddNew, setIsAddNew] = useState<boolean>(false);
@@ -45,7 +51,14 @@ const Dashboard: React.FC = () => {
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loadingData, setLoadingData] = useState<boolean>(false);
+    const [showToast, setShowToast] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>('');
+    const [colorToast, setColorToast] = useState<ColorToast>(
+        ColorToast.success
+    );
     const studentApiService = StudentApiService.getInstance();
+
+    console.log(colorToast);
 
     const { t, i18n } = useTranslation();
 
@@ -161,9 +174,11 @@ const Dashboard: React.FC = () => {
 
                 setDataSource(cloneDataSource);
                 setIsAddNew(false);
+                handleShowToast(t('successAdd'));
             }
         } catch (error) {
             console.log(error);
+            handleShowToast(t('failAdd'));
         }
     };
 
@@ -172,9 +187,11 @@ const Dashboard: React.FC = () => {
             const result: DataType = await studentApiService.deleteStudent(id);
             if (result) {
                 setDataSource(handleReplaceData(result));
+                handleShowToast(t('successDelete'));
             }
         } catch (error) {
             console.log(error);
+            handleShowToast(t('failDelete'));
         }
     };
 
@@ -191,9 +208,11 @@ const Dashboard: React.FC = () => {
                 dataSource[+result.id] = result;
 
                 setIsEdit(false);
+                handleShowToast(t('successEdit'));
             }
         } catch (error) {
             console.log(error);
+            handleShowToast(t('failEdit'));
         }
     };
 
@@ -210,6 +229,14 @@ const Dashboard: React.FC = () => {
     const handleChangeLanguage = (lng: string): void => {
         i18n.changeLanguage(lng);
         localStorage.setItem('language', lng);
+    };
+
+    const handleShowToast = (message: string, color?: ColorToast): void => {
+        if (color) {
+            setColorToast(color);
+        }
+        setMessage(message);
+        setShowToast(true);
     };
 
     useEffect(() => {
@@ -275,6 +302,23 @@ const Dashboard: React.FC = () => {
                 callback={handleEdit}
             />
             <ModalDetails data={data} isOpen={isShow} setIsOpen={setIsShow} />
+            <IonToast
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message={message}
+                duration={1500}
+                color={colorToast}
+                position={'top'}
+                buttons={[
+                    {
+                        text: 'Dismiss',
+                        role: 'cancel',
+                        handler: () => {
+                            console.log('Dismiss clicked');
+                        },
+                    },
+                ]}
+            />
         </IonPage>
     );
 };

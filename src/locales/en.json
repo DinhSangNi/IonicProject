@@ -13,5 +13,11 @@
     "detailedInformation": "Detailed Information",
     "firstNameRuleMessage": "Please input your first name !",
     "lastNameRuleMessage": "Please input your last name !",
-    "loadingMoreData": "Loading more data"
+    "loadingMoreData": "Loading more data",
+    "successAdd": "Added successfully !",
+    "failAdd": "Added failed !",
+    "successDelete": "Deleted successfully !",
+    "failDelete": "Deleted failed !",
+    "successEdit": "Edited successfully !",
+    "failEdit": "Edited failed !"
 }
