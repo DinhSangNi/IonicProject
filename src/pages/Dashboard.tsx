@@ -24,8 +24,10 @@ import ModalDetails from '../components/ModalDetails';
 import Table, { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { TypeValues } from '../components/FormPopup';
+import StudentApiService from '../services/studentApiService';
 import { useTranslation } from 'react-i18next';
 import { locales } from '../i18n/i18n';
+
 export type DataType = {
     id: string;
     firstName: string;
@@ -36,14 +38,14 @@ export type DataType = {
 
 const Dashboard: React.FC = () => {
     const [dataSource, setDataSource] = useState<DataType[]>([]);
-    const [page, setPage] = useState<number>(1);
-
     const [isAddNew, setIsAddNew] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isShow, setIsShow] = useState<boolean>(false);
     const [data, setData] = useState<DataType>();
+    const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loadingData, setLoadingData] = useState<boolean>(false);
+    const studentApiService = StudentApiService.getInstance();
 
     const { t, i18n } = useTranslation();
 
@@ -153,15 +155,10 @@ const Dashboard: React.FC = () => {
 
     const handleCreate = async (info: Partial<DataType>): Promise<void> => {
         try {
-            const result = await fetch(import.meta.env.VITE_BE_BASE_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(info),
-            });
-            if (result.ok) {
-                const cloneDataSource = [...dataSource, await result.json()];
+            const result = await studentApiService.addStudent<DataType>(info);
+            if (result) {
+                const cloneDataSource = [...dataSource, result];
+
                 setDataSource(cloneDataSource);
                 setIsAddNew(false);
             }
@@ -172,15 +169,9 @@ const Dashboard: React.FC = () => {
 
     const handleDeleteStudent = async (id: string): Promise<void> => {
         try {
-            const result = await fetch(
-                `${import.meta.env.VITE_BE_BASE_URL}/${id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-
+            const result: DataType = await studentApiService.deleteStudent(id);
             if (result) {
-                setDataSource(handleReplaceData(await result.json()));
+                setDataSource(handleReplaceData(result));
             }
         } catch (error) {
             console.log(error);
@@ -192,20 +183,13 @@ const Dashboard: React.FC = () => {
         id?: string
     ): Promise<void> => {
         try {
-            const result = await fetch(
-                `${import.meta.env.VITE_BE_BASE_URL}/${id}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ...info, lastUpdate: dayjs() }),
-                }
+            const result: DataType = await studentApiService.editStudent(
+                info,
+                id
             );
             if (result) {
-                const rs = await result.json();
-                const index = dataSource.findIndex((item) => item.id === rs.id);
-                dataSource[index] = await rs;
+                dataSource[+result.id] = result;
+
                 setIsEdit(false);
             }
         } catch (error) {
