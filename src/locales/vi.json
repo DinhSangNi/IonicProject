@@ -13,5 +13,11 @@
     "detailedInformation": "Thông tin chi tiết",
     "firstNameRuleMessage": "Nhập tên mày vào !",
     "lastNameRuleMessage": "Nhập họ mày vào !",
-    "loadingMoreData": "Đang tải thêm dữ liệu"
+    "loadingMoreData": "Đang tải thêm dữ liệu",
+    "successAdd": "Thêm mới thành công !",
+    "failAdd": "Thêm mới thất bại !",
+    "successDelete": "Xóa thành công !",
+    "failDelete": "Xáo thất bại !",
+    "successEdit": "Chỉnh sửa thành công !",
+    "failEdit": "Chỉnh sửa thất bại !"
 }
